@@ -4,7 +4,7 @@
 #' 
 #' Dependencies: dplyr, tidyr, stringr, jsonlite, lubridate, pull_country_codes
 #' 
-#' Notes: must use options(scipen = 999) to avoid scientific notation
+#' Notes: use options(scipen = 999) to avoid scientific notation
 #'
 #' @param date_start string; earliest date of data, formatted "2024-01-01"
 #' @param date_end string; last date of data, formatted "2025-01-01"

@@ -3,7 +3,7 @@
 #' Pull US trade in goods data from the Census Bureau
 #'
 #' Census API total goods data begin in January 2013
-#' Users may want to set scientific notation off: options(scipen = 999)
+#' Use options(scipen = 999) to avoid scientific notation
 #' 
 #' Dependencies: dplyr, tidyr, readr, jsonlite, lubridate, pull_country_codes
 #'
@@ -76,9 +76,9 @@ pull_trade_goods <- function(date_start, date_end,
     
     resurl <- tryCatch({
 
-      message("Pulling ", ctry, " ", direction, " from ",
+      message(paste0("Pulling ", ctry, " ", direction, " from ",
               format(as.Date(date_start, "%Y-%m-%d"), "%B %Y"), " to ",
-              format(as.Date(date_end, "%Y-%m-%d"), "%B %Y"))
+              format(as.Date(date_end, "%Y-%m-%d"), "%B %Y")))
       
       test <- paste0("https://api.census.gov/data/timeseries/intltrade/",
                      direction, "/",
@@ -87,6 +87,10 @@ pull_trade_goods <- function(date_start, date_end,
                      ctry_code,
                      "&key=", api_key)
       
+      # note: as pulled, resurl contains dup cols for cty_code; remove V6
+      df <- as.data.frame(jsonlite::fromJSON(resurl)) %>%
+        select(-any_of(c("V6")))
+
     }, 
     error = function(cond) {
       message("Census call returned error:")
@@ -98,10 +102,6 @@ pull_trade_goods <- function(date_start, date_end,
       message(cond)
     }
     )
-
-    # note: as pulled, resurl contains dup cols for cty_code; remove V6
-      df <- as.data.frame(jsonlite::fromJSON(resurl)) %>%
-        select(-any_of(c("V6")))
 
     df_names <- df[1, ] %>%
       tolower()
